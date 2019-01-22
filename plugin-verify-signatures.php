@@ -14,9 +14,9 @@ class WP_Signing_Verify {
 	protected const VALID_DOMAINS = [ 'wordpress.org', 'downloads.wordpress.org', 's.w.org' ];
 
 	public function __construct() {
-		// Validate we have the Sodium PHP extension available.
+		// Include Sodium_Compat when required.
 		if ( ! function_exists( 'sodium_crypto_sign_verify_detached' ) ) {
-			return;
+			include_once __DIR__ . '/sodium_compat/autoload.php';
 		}
 
 		add_action( 'upgrader_pre_download', [ $this, 'download_package_override' ], 1, 3 );

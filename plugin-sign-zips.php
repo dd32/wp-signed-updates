@@ -13,9 +13,9 @@ class WP_Signing_Signer {
 	protected const VALID_DOMAINS = [ 'wordpress.org', 'downloads.wordpress.org', 's.w.org' ];
 
 	public function __construct() {
-		// Validate we have the Sodium PHP extension available.
+		// Include Sodium_Compat when required.
 		if ( ! function_exists( 'sodium_crypto_sign_verify_detached' ) ) {
-			return;
+			include_once __DIR__ . '/sodium_compat/autoload.php';
 		}
 
 		add_filter( 'wp_trusted_keys',  [ $this, 'wp_trusted_keys' ] );
