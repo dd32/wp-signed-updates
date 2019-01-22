@@ -57,7 +57,6 @@ class WP_Signing_Signer {
 			'headers' => [],
 			'cookies' => [],
 			'filename' => null,
-			'http_rsponse' => false,
 		];
 	}
 
