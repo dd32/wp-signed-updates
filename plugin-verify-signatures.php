@@ -33,27 +33,38 @@ class WP_Signing_Verify {
 	}
 
 	/**
+	 * Validate the signature of a file where the signature is stored at a URL.
+	 *
+	 * @param string $file      The file to check
+	 * @param string $signature URL to a file containing a signature for $file.
+	 * @return bool
+	 */
+	public function validate_signature_from_url( $file, $signature_url ) {
+		// Fetch the signature of the file.
+		$signature_request = wp_safe_remote_get( $signature_url );
+
+		$signature = wp_remote_retrieve_body( $signature_request );
+
+		if ( is_wp_error( $signature_request ) || ! $signature ) {
+			return false;
+		}
+
+		// Validate it against known keys.
+		return $this->validate_signature( $file, $signature );
+	}
+
+	/**
 	 * Validate the signature of a file.
 	 *
 	 * @param string $file      The file to check
-	 * @param string $signature The Signature to validate against, or a http URL containing the signature.
+	 * @param string $signature The Signature to validate against.
 	 * @return bool
 	 */
 	public function validate_signature( $file, $signature ) {
 		$trusted_keys = apply_filters( 'wp_trusted_keys', self::TRUSTED_KEYS );
 
-		if ( preg_match( '!https?://!i', $signature ) ) {
-			// Fetch the signature of the file.
-			// We're using detached signatures here, where it's stored in a separate file.
-			$signature_request = wp_safe_remote_get( $signature );
-			$signature = wp_remote_retrieve_body( $signature_request );
-			if ( is_wp_error( $signature_request ) || ! $signature ) {
-				return false;
-			}
-		} elseif ( SODIUM_CRYPTO_SIGN_BYTES === strlen( hex2bin( $signature ) ) )  {
-			// Signature was passed in.
-			// $signature = $signature;
-		} else {
+		// Check for an invalid-length signature passed.
+		if ( SODIUM_CRYPTO_SIGN_BYTES !== strlen( hex2bin( $signature ) ) )  {
 			return false;
 		}
 
@@ -127,17 +138,21 @@ class WP_Signing_Verify {
 		if ( $signature ) {
 			// Verify the Signature
 			$upgrader->skin->feedback( 'Verifying file signature from HTTP Header&#8230;' );
+
+			$signature_valid = $this->validate_signature( $download_request['filename'], $signature );
 		} else {
-			// Fetch a detached signature from `$url.sig`.
-			$signature = "$package.sig";
+			// Fetch a detached signature from `$url.sig` and validate it.
+			$signature_url = "$package.sig";
 			$upgrader->skin->feedback(
 				'Verifying file signature&#8230; Fetching %s&#8230;',
-				'<code>' . $signature . '</code>'
+				'<code>' . $signature_url . '</code>'
 			);
+
+			$signature_valid = $this->validate_signature_from_url( $download_request['filename'], $signature_url );
 		}
 
-		if ( ! $this->validate_signature( $download_request['filename'], $signature ) ) {
-			@unlink( $download_file['filename'] );
+		if ( ! $signature_valid ) {
+			unlink( $tmpfname );
 			$upgrader->skin->feedback( '<strong>' . 'Signature Validation Failed.' . '</strong>' );
 			return new WP_Error(
 				'signature_failure',
@@ -155,7 +170,7 @@ class WP_Signing_Verify {
 
 		// END SIGNING CODE
 
-		return $download_request['filename'];
+		return $tmpfname;
 	}
 }
 new WP_Signing_Verify();
