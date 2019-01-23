@@ -9,21 +9,47 @@
  */
 
 class WP_Signing_Signer {
+
+	/**
+	 * A temporary storage map of $url => $file for files WP_HTTP creates.
+	 */
 	protected $downloaded_files = [];
+
+	/**
+	 * The domains whose requests we intend on signing.
+	 */
 	protected const VALID_DOMAINS = [ 'wordpress.org', 'downloads.wordpress.org', 's.w.org' ];
 
+	/**
+	 * Register filters required for this POC
+	 */
 	public function __construct() {
 		// Include Sodium_Compat when required.
 		if ( ! function_exists( 'sodium_crypto_sign_verify_detached' ) ) {
 			include_once __DIR__ . '/sodium_compat/autoload.php';
 		}
 
+		// Let WordPress know about OUR key
 		add_filter( 'wp_trusted_keys',  [ $this, 'wp_trusted_keys' ] );
+
+		// no-op HTTP requests for $url.sig, as we're replacing them with our own versions.
 		add_filter( 'pre_http_request', [ $this, 'intercept_signature_http_request' ], 10, 3 );
+
+		// Store the list of URLs WP_HTTP downloads to file, to allow us to sign that instead of re-requesting it.
 		add_filter( 'http_response',    [ $this, 'remember_requested_files' ], 10, 3 );
+
+		// Add a X-Content-Signature header to WP_HTTP file downloads.
 		add_filter( 'http_response',    [ $this, 'add_signature_header' ], 10, 3 );
 	}
 
+	/**
+	 * Filter to override the WP_HTTP requests to return our own Signature Files.
+	 *
+	 * @param mixed  $filter_value The download result to override.
+	 * @param array  $args         The WP_HTTP Request args.
+	 * @param string $url          The URL being requested.
+	 * @return null|array Null if we're not affecting the request, or an array mimicking WP_HTTP with our signature upon request.
+	 */
 	public function intercept_signature_http_request( $filter_value, $args, $url ) {
 		// Only sign specific URLs
 		$hostname = parse_url( $url, PHP_URL_HOST );
@@ -61,6 +87,14 @@ class WP_Signing_Signer {
 		];
 	}
 
+	/**
+	 * Filter WP_HTTP responses to add our X-Content-Signature header when required.
+	 *
+	 * @param mixed  $response  The WP_HTTP result to modify.
+	 * @param array  $args      The WP_HTTP Request args.
+	 * @param string $url       The URL being requested.
+	 * @return mixed The WP_HTTP result, maybe with X-Content-Signature added.
+	 */
 	public function add_signature_header( $response, $args, $url ) {
 		// Only sign specific URLs
 		$hostname = parse_url( $url, PHP_URL_HOST );
@@ -87,7 +121,14 @@ class WP_Signing_Signer {
 		return $response;
 	}
 
-	// Remember the downloaded files to allow us to use the local file for signing.
+	/**
+	 * Filter WP_HTTP responses to remember downloaded files, used to make it easier to sign requests.
+	 *
+	 * @param mixed  $response  The WP_HTTP result to modify.
+	 * @param array  $args      The WP_HTTP Request args.
+	 * @param string $url       The URL being requested.
+	 * @return mixed The WP_HTTP result, maybe with X-Content-Signature added.
+	 */
 	public function remember_requested_files( $response, $args, $url ) {
 		if ( $response['filename'] ) {
 			$this->downloaded_files[ $url ] = $response['filename'];
@@ -96,7 +137,12 @@ class WP_Signing_Signer {
 		return $response;
 	}
 
-	// Add our public key to WordPress.
+	/**
+	 * Add our Signing key to WordPress's trusted keys.
+	 *
+	 * @param array $keys The existing trusted keys.
+	 * @return $keys with an additional key.
+	 */
 	public function wp_trusted_keys( $keys ) {
 		if ( ! get_option( 'signing_signer_public_key' ) ) {
 			$this->regenerate_keys();
@@ -109,7 +155,12 @@ class WP_Signing_Signer {
 		return $keys;
 	}
 
-	// Sign a file.
+	/**
+	 * Generate the signature for a given file.
+	 *
+	 * @param string $filename The file to sign.
+	 * @return bool|string False upon failure, hex-encoded signature upon success.
+	 */
 	public function sign_file( $filename ) {
 		if ( ! file_exists( $filename ) ) {
 			return false;
@@ -131,7 +182,9 @@ class WP_Signing_Signer {
 		return bin2hex( $signature );
 	}
 
-	// Generate a keypair for signing, not stored securely.
+	/**
+	 * Generate a new signing keypair.
+	 */
 	public function regenerate_keys() {
 		$keypair = sodium_crypto_sign_keypair();
 

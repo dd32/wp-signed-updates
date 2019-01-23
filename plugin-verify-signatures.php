@@ -10,9 +10,19 @@
 
 class WP_Signing_Verify {
 
+	/**
+	 * The Public Keys we trust by default.
+	 */
 	protected const TRUSTED_KEYS = [];
+
+	/**
+	 * The domains whose requests we intend on signing.
+	 */
 	protected const VALID_DOMAINS = [ 'wordpress.org', 'downloads.wordpress.org', 's.w.org' ];
 
+	/**
+	 * Register filters required for this POC
+	 */
 	public function __construct() {
 		// Include Sodium_Compat when required.
 		if ( ! function_exists( 'sodium_crypto_sign_verify_detached' ) ) {
@@ -58,7 +68,14 @@ class WP_Signing_Verify {
 		return false;
 	}
 
-	// Override the WP_Upgrader download_package() method to perform signature verification.
+	/**
+	 * Filter to override the `WP_Upgrader::download_package()` method to perform Signature Verification.
+	 *
+	 * @param mixed       $filter_value The download result to override.
+	 * @param string      $package      The package which is being installed.
+	 * @param WP_Upgrader $upgrader     The WP_Upgrader instance being overridden.
+	 * @return null|WP_Error|string Null if we're not affecting the request, WP_Error if an error occurs, and a string of the local package to install otherwise.
+	 */
 	public function download_package_override( $filter_value, $package, $upgrader ) {
 		if ( ! preg_match( '!^(http|https)://!i', $package ) ) {
 			return $filter_value;
