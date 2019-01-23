@@ -21,6 +21,7 @@ class WP_Signing_Signer {
 		add_filter( 'wp_trusted_keys',  [ $this, 'wp_trusted_keys' ] );
 		add_filter( 'pre_http_request', [ $this, 'intercept_signature_http_request' ], 10, 3 );
 		add_filter( 'http_response',    [ $this, 'remember_requested_files' ], 10, 3 );
+		add_filter( 'http_response',    [ $this, 'add_signature_header' ], 10, 3 );
 	}
 
 	public function intercept_signature_http_request( $filter_value, $args, $url ) {
@@ -58,6 +59,32 @@ class WP_Signing_Signer {
 			'cookies' => [],
 			'filename' => null,
 		];
+	}
+
+	public function add_signature_header( $response, $args, $url ) {
+		// Only sign specific URLs
+		$hostname = parse_url( $url, PHP_URL_HOST );
+		if ( ! in_array( $hostname, self::VALID_DOMAINS, true ) ) {
+			return $response;
+		}
+
+		// Only sign streamed files
+		if ( ! $response['filename'] ) {
+			return $response;
+		}
+
+		// Only sign ZIPs for now.
+		if ( ! preg_match( '!\.zip!i', $url ) ) {
+			return $response;
+		}
+
+		// Sign it.
+		$signature = $this->sign_file( $response['filename'] );
+		if ( $signature ) {
+			$response['headers']['x-content-signature'] = $signature;
+		}
+
+		return $response;
 	}
 
 	// Remember the downloaded files to allow us to use the local file for signing.
