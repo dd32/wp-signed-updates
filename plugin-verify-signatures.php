@@ -144,8 +144,10 @@ class WP_Signing_Verify {
 			// Fetch a detached signature from `$url.sig` and validate it.
 			$signature_url = "$package.sig";
 			$upgrader->skin->feedback(
-				'Verifying file signature&#8230; Fetching %s&#8230;',
-				'<code>' . $signature_url . '</code>'
+				sprintf(
+					'Verifying file signature&#8230; Fetching %s&#8230;',
+					'<span class="code">' . $signature_url . '</span>'
+				)
 			);
 
 			$signature_valid = $this->validate_signature_from_url( $download_request['filename'], $signature_url );
@@ -158,14 +160,16 @@ class WP_Signing_Verify {
 				'signature_failure',
 				sprintf(
 					'The signature validation of %s failed.',
-					'<code>' . basename( $package ) . '</code>'
+					'<span class="code">' . basename( $package ) . '</span>'
 				)
 			);
 		}
 
 		$upgrader->skin->feedback(
-			'<strong>' . 'Signature Verification of %s Passed.' . '</strong>',
-			'<code>' . basename( $package ) . '</code>'
+			sprintf(
+				'<strong>' . 'Signature Verification of %s Passed.' . '</strong>',
+				'<span class="code">' . basename( $package ) . '</span>'
+			)
 		);
 
 		// END SIGNING CODE
