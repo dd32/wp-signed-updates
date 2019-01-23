@@ -64,6 +64,12 @@ class WP_Signing_Verify {
 
 		$download_file = download_url( $package );
 
+		if ( is_wp_error( $download_file ) ) {
+			return new WP_Error( 'download_failed', $upgrader->strings['download_failed'], $download_file->get_error_message() );
+		}
+
+		// START SIGNING CODE
+
 		// All signatures are available at `$url.sig`.
 		$signature_url = "$package.sig";
 
@@ -90,9 +96,7 @@ class WP_Signing_Verify {
 			'<code>' . basename( $package ) . '</code>'
 		);
 
-		if ( is_wp_error( $download_file ) ) {
-			return new WP_Error( 'download_failed', $upgrader->strings['download_failed'], $download_file->get_error_message() );
-		}
+		// END SIGNING CODE
 
 		return $download_file;
 	}
