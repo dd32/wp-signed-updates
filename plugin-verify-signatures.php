@@ -26,7 +26,7 @@ class WP_Signing_Verify {
 	public function __construct() {
 		// Include Sodium_Compat when required.
 		if ( ! function_exists( 'sodium_crypto_sign_verify_detached' ) ) {
-			include_once __DIR__ . '/sodium_compat/autoload.php';
+			include_once dirname( __FILE__ ) . '/sodium_compat/autoload.php';
 		}
 
 		add_action( 'upgrader_pre_download', array( $this, 'download_package_override' ), 1, 3 );

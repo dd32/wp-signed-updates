@@ -26,7 +26,7 @@ class WP_Signing_Signer {
 	public function __construct() {
 		// Include Sodium_Compat when required.
 		if ( ! function_exists( 'sodium_crypto_sign_verify_detached' ) ) {
-			include_once __DIR__ . '/sodium_compat/autoload.php';
+			include_once dirname( __FILE__ ) . '/sodium_compat/autoload.php';
 		}
 
 		// Let WordPress know about OUR key
