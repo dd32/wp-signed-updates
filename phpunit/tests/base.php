@@ -22,4 +22,36 @@ abstract class WP_Signing_UnitTestCase extends WP_UnitTestCase {
 
 		return $skin->get_upgrade_messages();
 	}
+
+	// Filter - Ensure WordPress has a single invalid key.
+	function filter_wp_trusted_keys_only_invalid_key() {
+		return array(
+			$this->helper_random_public_key(),
+		);
+	}
+
+	// Filter - Prefix a random key to WordPress's existing keys.
+	function filter_wp_trusted_keys_prefix_invalid_key( $keys ) {
+		return array_merge(
+			array( $this->helper_random_public_key() ),
+			$keys
+		);
+	}
+
+	// Helper - Generate a new random public key.
+	function helper_random_public_key() {
+		static $key = false;
+		if ( $key ) {
+			return $key;
+		}
+
+		// Generate a new key.
+		$random_keypair = sodium_crypto_sign_keypair();
+
+		$random_public_key = sodium_crypto_sign_publickey( $random_keypair );
+
+		$key = bin2hex( $random_public_key );
+
+		return $key;
+	}
 }
