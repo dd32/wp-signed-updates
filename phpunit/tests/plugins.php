@@ -12,7 +12,7 @@ class Test_Plugins extends WP_Signing_UnitTestCase {
 		foreach ( $messages as $msg ) {
 			$verify = $verify || ( false !== stripos( $msg, 'Verifying file signature' ) );
 		}
-		$this->assertTrue( $verify, "Signature Verification did not occusr" );
+		$this->assertTrue( $verify, "Signature Verification did not occur" );
 
 		// Verify that Signature passed.
 		$signature_passed = false;
@@ -73,6 +73,7 @@ class Test_Plugins extends WP_Signing_UnitTestCase {
 
 	}
 
+	// Integration Test - Install a plugin, ensure signature verification succeeds even though there's an invalid key trusted by WordPress.
 	function test_install_plugin_passes_with_prefixed_invalid_key() {
 
 		add_filter( 'wp_trusted_keys', array( $this, 'filter_wp_trusted_keys_prefix_invalid_key' ), 100 );
@@ -94,6 +95,20 @@ class Test_Plugins extends WP_Signing_UnitTestCase {
 		$this->assertTrue( $signature_passed, "Signature Verification Failed" );
 
 		remove_filter( 'wp_trusted_keys', array( $this, 'filter_wp_trusted_keys_prefix_invalid_key' ), 100 );
+	}
+
+	// Integration Test - Ensure that installing a plugin from a non-WordPress.org location bypasses signature verification.
+	function test_install_plugin_3rd_party_bypasses_signing() {
+		$url = 'https://github.com/dd32/wp-signed-updates/archive/master.zip';
+
+		$messages = $this->install_plugin_and_return_messages( $url );
+
+		// Verify that signing is NOT being attempted.
+		$verify = false;
+		foreach ( $messages as $msg ) {
+			$verify = $verify || ( false !== stripos( $msg, 'Verifying file signature' ) );
+		}
+		$this->assertFalse( $verify, "Signature Verification occured, it shouldn't have!" );
 	}
 
 }

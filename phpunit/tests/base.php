@@ -8,17 +8,24 @@ abstract class WP_Signing_UnitTestCase extends WP_UnitTestCase {
 		include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' ); // For Plugin_Upgrader
 		include_once( dirname( dirname( __FILE__ ) ) . '/class-wp-signing-upgrader-skin.php' ); // For WP_Signing_Upgrader_Skin
 
-		$api = plugins_api( 'plugin_information', array( 'slug' => $plugin_slug ) );
+		if ( preg_match( '!^https?://!i', $plugin_slug ) ) {
+			// The $plugin_slug looked like a URL, so we'll install that.
+			$package_url = $plugin_slug;
+		} else {
+			$api = plugins_api( 'plugin_information', array( 'slug' => $plugin_slug ) );
 
-		// Temporary error
-		if ( is_wp_error( $api ) ) {
-			wp_die( $api );
+			// Temporary error
+			if ( is_wp_error( $api ) ) {
+				wp_die( $api );
+			}
+
+			$package_url = $api->download_link;
 		}
 
 		$skin     = new WP_Signing_Upgrader_Skin();
 		$upgrader = new Plugin_Upgrader( $skin );
 
-		$upgrader->install( $api->download_link );
+		$upgrader->install( $package_url );
 
 		return $skin->get_upgrade_messages();
 	}
