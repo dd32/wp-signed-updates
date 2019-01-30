@@ -25,6 +25,7 @@ matrix:
     - php: 7.1
     - php: 7.0
     - php: 7.0
+      dist: xenial
       env: WP_SIGNING_EXT_LIBSODIUM=1
     - php: 5.6
     - php: 5.5
@@ -41,6 +42,7 @@ matrix:
        - WP_VERSION=trunk
        - WP_SIGNING_SIGN=off
     - php: 7.0
+      dist: xenial
       env: WP_SIGNING_EXT_LIBSODIUM=1
 
 before_script:
