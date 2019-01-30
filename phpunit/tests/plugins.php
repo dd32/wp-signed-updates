@@ -37,7 +37,7 @@ class Test_Plugins extends WP_Signing_UnitTestCase {
 		}
 		$this->assertTrue( $verify, "Signature Verification did not occusr" );
 
-		// Verify that Signature failued.
+		// Verify that Signature failed.
 		$signature_failure = false;
 		foreach ( $messages as $msg ) {
 			$signature_failure = $signature_failure || ( false !== stripos( $msg, 'Signature Validation Failed' ) );
@@ -62,7 +62,7 @@ class Test_Plugins extends WP_Signing_UnitTestCase {
 		}
 		$this->assertTrue( $verify, "Signature Verification did not occusr" );
 
-		// Verify that Signature failued.
+		// Verify that Signature failed.
 		$signature_failure = false;
 		foreach ( $messages as $msg ) {
 			$signature_failure = $signature_failure || ( false !== stripos( $msg, 'Signature Validation Failed' ) );
