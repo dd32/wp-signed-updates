@@ -13,12 +13,12 @@ class WP_Signing_Signer {
 	/**
 	 * A temporary storage map of $url => $file for files WP_HTTP creates.
 	 */
-	protected $downloaded_files = [];
+	protected $downloaded_files = array();
 
 	/**
 	 * The domains whose requests we intend on signing.
 	 */
-	protected const VALID_DOMAINS = [ 'wordpress.org', 'downloads.wordpress.org', 's.w.org' ];
+	protected $valid_domains = array( 'wordpress.org', 'downloads.wordpress.org', 's.w.org' );
 
 	/**
 	 * Register filters required for this POC
@@ -30,16 +30,16 @@ class WP_Signing_Signer {
 		}
 
 		// Let WordPress know about OUR key
-		add_filter( 'wp_trusted_keys',  [ $this, 'wp_trusted_keys' ] );
+		add_filter( 'wp_trusted_keys',  array( $this, 'wp_trusted_keys' ) );
 
 		// no-op HTTP requests for $url.sig, as we're replacing them with our own versions.
-		add_filter( 'pre_http_request', [ $this, 'intercept_signature_http_request' ], 10, 3 );
+		add_filter( 'pre_http_request', array( $this, 'intercept_signature_http_request' ), 10, 3 );
 
 		// Store the list of URLs WP_HTTP downloads to file, to allow us to sign that instead of re-requesting it.
-		add_filter( 'http_response',    [ $this, 'remember_requested_files' ], 10, 3 );
+		add_filter( 'http_response',    array( $this, 'remember_requested_files' ), 10, 3 );
 
 		// Add a X-Content-Signature header to WP_HTTP file downloads.
-		add_filter( 'http_response',    [ $this, 'add_signature_header' ], 10, 3 );
+		add_filter( 'http_response',    array( $this, 'add_signature_header' ), 10, 3 );
 	}
 
 	/**
@@ -53,7 +53,7 @@ class WP_Signing_Signer {
 	public function intercept_signature_http_request( $filter_value, $args, $url ) {
 		// Only sign specific URLs
 		$hostname = parse_url( $url, PHP_URL_HOST );
-		if ( ! in_array( $hostname, self::VALID_DOMAINS, true ) ) {
+		if ( ! in_array( $hostname, $this->valid_domains, true ) ) {
 			return $filter_value;
 		}
 
@@ -75,16 +75,16 @@ class WP_Signing_Signer {
 		}
 
 		// Intercept the request, return our new signature.
-		return [
+		return array(
 			'body' => $signature,
-			'response' => [
+			'response' => array(
 				'code' => 200,
 				'message' => 'OK',
-			],
-			'headers' => [],
-			'cookies' => [],
+			),
+			'headers' => array(),
+			'cookies' => array(),
 			'filename' => null,
-		];
+		);
 	}
 
 	/**
@@ -98,7 +98,7 @@ class WP_Signing_Signer {
 	public function add_signature_header( $response, $args, $url ) {
 		// Only sign specific URLs
 		$hostname = parse_url( $url, PHP_URL_HOST );
-		if ( ! in_array( $hostname, self::VALID_DOMAINS, true ) ) {
+		if ( ! in_array( $hostname, $this->valid_domains, true ) ) {
 			return $response;
 		}
 

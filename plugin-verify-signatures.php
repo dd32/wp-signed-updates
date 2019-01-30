@@ -13,12 +13,12 @@ class WP_Signing_Verify {
 	/**
 	 * The Public Keys we trust by default.
 	 */
-	protected const TRUSTED_KEYS = [];
+	protected $trusted_keys = array();
 
 	/**
 	 * The domains whose requests we intend on signing.
 	 */
-	protected const VALID_DOMAINS = [ 'wordpress.org', 'downloads.wordpress.org', 's.w.org' ];
+	protected $valid_domains = array( 'wordpress.org', 'downloads.wordpress.org', 's.w.org' );
 
 	/**
 	 * Register filters required for this POC
@@ -29,7 +29,7 @@ class WP_Signing_Verify {
 			include_once __DIR__ . '/sodium_compat/autoload.php';
 		}
 
-		add_action( 'upgrader_pre_download', [ $this, 'download_package_override' ], 1, 3 );
+		add_action( 'upgrader_pre_download', array( $this, 'download_package_override' ), 1, 3 );
 	}
 
 	/**
@@ -61,10 +61,10 @@ class WP_Signing_Verify {
 	 * @return bool
 	 */
 	public function validate_signature( $file, $signature ) {
-		$trusted_keys = apply_filters( 'wp_trusted_keys', self::TRUSTED_KEYS );
+		$trusted_keys = apply_filters( 'wp_trusted_keys', $this->trusted_keys );
 
 		// Check for an invalid-length signature passed.
-		if ( SODIUM_CRYPTO_SIGN_BYTES !== strlen( hex2bin( $signature ) ) )  {
+		if ( ! $signature || SODIUM_CRYPTO_SIGN_BYTES !== strlen( hex2bin( $signature ) ) )  {
 			return false;
 		}
 
@@ -94,7 +94,7 @@ class WP_Signing_Verify {
 
 		// Only sign specific URLs
 		$hostname = parse_url( $package, PHP_URL_HOST );
-		if ( ! in_array( $hostname, self::VALID_DOMAINS, true ) ) {
+		if ( ! in_array( $hostname, $this->valid_domains, true ) ) {
 			return $filter_value;
 		}
 
