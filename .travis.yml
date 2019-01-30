@@ -24,6 +24,8 @@ matrix:
     - php: 7.2
     - php: 7.1
     - php: 7.0
+    - php: 7.0
+      env: WP_SIGNING_EXT_LIBSODIUM=1
     - php: 5.6
     - php: 5.5
     - php: 5.4
@@ -38,6 +40,8 @@ matrix:
       env:
        - WP_VERSION=trunk
        - WP_SIGNING_SIGN=off
+    - php: 7.0
+      env: WP_SIGNING_EXT_LIBSODIUM=1
 
 before_script:
   - php -m
@@ -54,6 +58,12 @@ before_script:
       composer global require "phpunit/phpunit=4.8.*|5.7.*"
     else
       echo "PHP 5.2: Skipping composer for PHPUnit, relying upon builtin PHPUnit."
+    fi
+  - |
+    if [[ "$WP_SIGNING_EXT_LIBSODIUM" == "1" ]]; then
+      sudo apt-get -qq update
+      sudo apt-get install -y libsodium-dev
+      pecl install libsodium
     fi
 
 script:
