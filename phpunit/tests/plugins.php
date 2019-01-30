@@ -111,12 +111,20 @@ class Test_Plugins extends WP_Signing_UnitTestCase {
 		);
 	}
 
+	// Helper - Generate a new random public key.
 	function helper_random_public_key() {
+		static $key = false;
+		if ( $key ) {
+			return $key;
+		}
+
 		// Generate a new key.
 		$random_keypair = sodium_crypto_sign_keypair();
 
 		$random_public_key = sodium_crypto_sign_publickey( $random_keypair );
 
-		return bin2hex( $random_public_key );
+		$key = bin2hex( $random_public_key );
+
+		return $key;
 	}
 }
