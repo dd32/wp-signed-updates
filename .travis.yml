@@ -58,6 +58,7 @@ before_script:
       sudo apt-get install -y libsodium-dev
       pecl install libsodium
     fi
+  - php -m
   - |
     bash phpunit/install.sh wordpress_test root '' localhost $WP_VERSION
     if [[ "$TRAVIS_PHP_VERSION" != "5.2" ]]; then
@@ -65,7 +66,6 @@ before_script:
     else
       echo "PHP 5.2: Skipping composer for PHPUnit, relying upon builtin PHPUnit."
     fi
-  - php -m
 
 script:
   - |
