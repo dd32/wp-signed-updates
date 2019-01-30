@@ -40,6 +40,7 @@ matrix:
        - WP_SIGNING_SIGN=off
 
 before_script:
+  - php -m
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - |
     if [ -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ]; then
