@@ -45,7 +45,7 @@ class WP_Signing_Verify {
 
 		$signature = wp_remote_retrieve_body( $signature_request );
 
-		if ( is_wp_error( $signature_request ) || ! $signature ) {
+		if ( is_wp_error( $signature_request ) || 200 != wp_remote_retrieve_response_code( $signature_request ) || ! $signature ) {
 			return false;
 		}
 
