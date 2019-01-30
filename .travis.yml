@@ -23,6 +23,8 @@ matrix:
       env: WP_VERSION=latest
     - php: 7.2
     - php: 7.1
+    - php: 7.1
+      env: WP_SIGNING_EXT_LIBSODIUM=1
     - php: 7.0
     - php: 7.0
       env: WP_SIGNING_EXT_LIBSODIUM=1
@@ -40,11 +42,8 @@ matrix:
       env:
        - WP_VERSION=trunk
        - WP_SIGNING_SIGN=off
-    - php: 7.0
-      env: WP_SIGNING_EXT_LIBSODIUM=1
 
 before_script:
-  - php -m
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - |
     if [ -f ~/.phpenv/versions/$(phpenv version-name)/etc/conf.d/xdebug.ini ]; then
@@ -66,6 +65,7 @@ before_script:
     else
       echo "PHP 5.2: Skipping composer for PHPUnit, relying upon builtin PHPUnit."
     fi
+  - php -m
 
 script:
   - |
