@@ -64,14 +64,14 @@ class WP_Signing_Verify {
 		$trusted_keys = apply_filters( 'wp_trusted_keys', $this->trusted_keys );
 
 		// Check for an invalid-length signature passed.
-		if ( ! $signature || SODIUM_CRYPTO_SIGN_BYTES !== strlen( hex2bin( $signature ) ) )  {
+		if ( ! $signature || SODIUM_CRYPTO_SIGN_BYTES !== strlen( $this->hex2bin( $signature ) ) )  {
 			return false;
 		}
 
 		$file_contents = file_get_contents( $file );
 
 		foreach ( $trusted_keys as $key ) {
-			if ( sodium_crypto_sign_verify_detached( hex2bin( $signature ), $file_contents, hex2bin( $key ) ) ) {
+			if ( sodium_crypto_sign_verify_detached( $this->hex2bin( $signature ), $file_contents, $this->hex2bin( $key ) ) ) {
 				return true;
 			}
 		}
@@ -175,6 +175,21 @@ class WP_Signing_Verify {
 		// END SIGNING CODE
 
 		return $tmpfname;
+	}
+
+	/**
+	 * hex2bin() is PHP 5.4+, so unfortunately we need to rely upon Sodium_Compat here.
+	 */
+	protected function hex2bin( $data ) {
+		if ( function_exists( 'hex2bin' ) ) {
+			return hex2bin( $data );
+		}
+
+		if ( is_callable( array( 'ParagonIE_Sodium_Compat', 'hex2bin' ) ) ) {
+			return ParagonIE_Sodium_Compat::hex2bin( $data );
+		}
+
+		die( 'No compatible hex2bin() loaded' );
 	}
 }
 new WP_Signing_Verify();
