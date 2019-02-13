@@ -74,9 +74,9 @@ class WP_Signing_Signer {
 			return $filter_value;
 		}
 
-		// Intercept the request, return our new signature.
+		// Intercept the request, return our new signature (Plus an extra random one which should fail)
 		return array(
-			'body' => $signature,
+			'body' => $this->random_signature() . "\n" . $signature,
 			'response' => array(
 				'code' => 200,
 				'message' => 'OK',
@@ -115,7 +115,7 @@ class WP_Signing_Signer {
 		// Sign it.
 		$signature = $this->sign_file( $response['filename'] );
 		if ( $signature ) {
-			$response['headers']['x-content-signature'] = $signature;
+			$response['headers']['x-content-signature'] = array( $this->random_signature(), $signature );
 		}
 
 		return $response;
@@ -180,6 +180,24 @@ class WP_Signing_Signer {
 		$signature = sodium_crypto_sign_detached( $file_contents, $secret_key );
 
 		return bin2hex( $signature );
+	}
+
+	/**
+	 *
+	 */
+	public function random_signature() {
+		static $signature = null;
+		if ( $signature ) {
+			return $signature;
+		}
+
+		$keypair = sodium_crypto_sign_keypair();
+		$secret_key = sodium_crypto_sign_secretkey( $keypair );
+
+		$signature = sodium_crypto_sign_detached( microtime(), $secret_key );
+		$signature = bin2hex( $signature );
+
+		return $signature;
 	}
 
 	/**

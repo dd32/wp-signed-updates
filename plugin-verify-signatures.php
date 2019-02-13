@@ -43,36 +43,47 @@ class WP_Signing_Verify {
 		// Fetch the signature of the file.
 		$signature_request = wp_safe_remote_get( $signature_url );
 
-		$signature = wp_remote_retrieve_body( $signature_request );
+		$signatures = wp_remote_retrieve_body( $signature_request );
 
-		if ( is_wp_error( $signature_request ) || 200 != wp_remote_retrieve_response_code( $signature_request ) || ! $signature ) {
+		if ( is_wp_error( $signature_request ) || 200 != wp_remote_retrieve_response_code( $signature_request ) || ! $signatures ) {
 			return false;
 		}
 
+		// Allow for multiple signatures in a file.s
+		$signatures = explode( "\n", $signatures );
+
 		// Validate it against known keys.
-		return $this->validate_signature( $file, $signature );
+		return $this->validate_signature( $file, $signatures );
 	}
 
 	/**
 	 * Validate the signature of a file.
 	 *
-	 * @param string $file      The file to check
-	 * @param string $signature The Signature to validate against.
+	 * @param string $file       The file to check
+	 * @param array  $signatures A list of signatures to validate against.
 	 * @return bool
 	 */
-	public function validate_signature( $file, $signature ) {
+	public function validate_signature( $file, $signatures ) {
 		$trusted_keys = apply_filters( 'wp_trusted_keys', $this->trusted_keys );
 
-		// Check for an invalid-length signature passed.
-		if ( ! $signature || SODIUM_CRYPTO_SIGN_BYTES !== strlen( $this->hex2bin( $signature ) ) )  {
+		if ( ! $signatures ) {
 			return false;
 		}
 
 		$file_contents = file_get_contents( $file );
 
-		foreach ( $trusted_keys as $key ) {
-			if ( sodium_crypto_sign_verify_detached( $this->hex2bin( $signature ), $file_contents, $this->hex2bin( $key ) ) ) {
-				return true;
+		foreach ( (array) $signatures as $signature ) {
+			$signature_raw = $this->hex2bin( $signature );
+
+			// Check for an invalid-length signature passed.
+			if ( SODIUM_CRYPTO_SIGN_BYTES !== strlen( $signature_raw ) )  {
+				continue;
+			}
+
+			foreach ( $trusted_keys as $key ) {
+				if ( sodium_crypto_sign_verify_detached( $signature_raw, $file_contents, $this->hex2bin( $key ) ) ) {
+					return true;
+				}
 			}
 		}
 
