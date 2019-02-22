@@ -49,7 +49,7 @@ class WP_Signing_Verify {
 			return false;
 		}
 
-		// Allow for multiple signatures in a file.s
+		// Allow for multiple signatures in a file.
 		$signatures = explode( "\n", $signatures );
 
 		// Validate it against known keys.

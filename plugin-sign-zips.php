@@ -183,7 +183,7 @@ class WP_Signing_Signer {
 	}
 
 	/**
-	 *
+	 * Generate a random signature per pageload for testing purposes.
 	 */
 	public function random_signature() {
 		static $signature = null;
