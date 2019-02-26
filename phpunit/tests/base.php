@@ -57,8 +57,6 @@ abstract class WP_Signing_UnitTestCase extends WP_UnitTestCase {
 
 		$random_public_key = sodium_crypto_sign_publickey( $random_keypair );
 
-		$key = bin2hex( $random_public_key );
-
-		return $key;
+		return base64_encode( $random_public_key );
 	}
 }
