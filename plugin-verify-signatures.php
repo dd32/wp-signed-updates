@@ -71,7 +71,7 @@ class WP_Signing_Verify {
 			return false;
 		}
 
-		$hash = hash_file( 'sha512', $file, true );
+		$hash = hash_file( 'sha384', $file, true );
 
 		foreach ( (array) $signatures as $signature ) {
 			$signature_raw = base64_decode( $signature );

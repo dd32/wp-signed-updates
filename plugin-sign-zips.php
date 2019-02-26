@@ -166,7 +166,7 @@ class WP_Signing_Signer {
 			return false;
 		}
 
-		$hash = hash_file( 'sha512', $filename, true );
+		$hash = hash_file( 'sha384', $filename, true );
 
 		$secret_key = get_option( 'signing_signer_secret_key' );
 		if ( ! $secret_key ) {
