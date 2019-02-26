@@ -65,12 +65,13 @@ class WP_Signing_Verify {
 	 */
 	public function validate_signature( $file, $signatures ) {
 		$trusted_keys = apply_filters( 'wp_trusted_keys', $this->trusted_keys );
+		$trusted_keys = array_map( 'base64_decode', $trusted_keys );
 
 		if ( ! $signatures ) {
 			return false;
 		}
 
-		$file_contents = file_get_contents( $file );
+		$hash = hash_file( 'sha512', $file, true );
 
 		foreach ( (array) $signatures as $signature ) {
 			$signature_raw = base64_decode( $signature );
@@ -81,7 +82,7 @@ class WP_Signing_Verify {
 			}
 
 			foreach ( $trusted_keys as $key ) {
-				if ( sodium_crypto_sign_verify_detached( $signature_raw, $file_contents, base64_decode( $key ) ) ) {
+				if ( sodium_crypto_sign_verify_detached( $signature_raw, $hash, $key ) ) {
 					return true;
 				}
 			}

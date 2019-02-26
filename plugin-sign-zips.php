@@ -165,10 +165,8 @@ class WP_Signing_Signer {
 		if ( ! file_exists( $filename ) ) {
 			return false;
 		}
-		$file_contents = file_get_contents( $filename );
-		if ( ! $file_contents ) {
-			return false;
-		}
+
+		$hash = hash_file( 'sha512', $filename, true );
 
 		$secret_key = get_option( 'signing_signer_secret_key' );
 		if ( ! $secret_key ) {
@@ -177,7 +175,7 @@ class WP_Signing_Signer {
 		}
 		$secret_key = base64_decode( $secret_key );
 
-		$signature = sodium_crypto_sign_detached( $file_contents, $secret_key );
+		$signature = sodium_crypto_sign_detached( $hash, $secret_key );
 
 		return base64_encode( $signature );
 	}
@@ -194,7 +192,7 @@ class WP_Signing_Signer {
 		$keypair = sodium_crypto_sign_keypair();
 		$secret_key = sodium_crypto_sign_secretkey( $keypair );
 
-		$signature = sodium_crypto_sign_detached( microtime(), $secret_key );
+		$signature = sodium_crypto_sign_detached( microtime( true ), $secret_key );
 		$signature = base64_encode( $signature );
 
 		return $signature;
