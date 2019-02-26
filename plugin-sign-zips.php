@@ -192,7 +192,7 @@ class WP_Signing_Signer {
 		$keypair = sodium_crypto_sign_keypair();
 		$secret_key = sodium_crypto_sign_secretkey( $keypair );
 
-		$signature = sodium_crypto_sign_detached( microtime( true ), $secret_key );
+		$signature = sodium_crypto_sign_detached( (string) microtime(), $secret_key );
 		$signature = base64_encode( $signature );
 
 		return $signature;
