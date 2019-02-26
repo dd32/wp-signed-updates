@@ -73,7 +73,7 @@ class WP_Signing_Verify {
 		$file_contents = file_get_contents( $file );
 
 		foreach ( (array) $signatures as $signature ) {
-			$signature_raw = $this->hex2bin( $signature );
+			$signature_raw = base64_decode( $signature );
 
 			// Check for an invalid-length signature passed.
 			if ( SODIUM_CRYPTO_SIGN_BYTES !== strlen( $signature_raw ) )  {
@@ -81,7 +81,7 @@ class WP_Signing_Verify {
 			}
 
 			foreach ( $trusted_keys as $key ) {
-				if ( sodium_crypto_sign_verify_detached( $signature_raw, $file_contents, $this->hex2bin( $key ) ) ) {
+				if ( sodium_crypto_sign_verify_detached( $signature_raw, $file_contents, base64_decode( $key ) ) ) {
 					return true;
 				}
 			}
@@ -188,19 +188,5 @@ class WP_Signing_Verify {
 		return $tmpfname;
 	}
 
-	/**
-	 * hex2bin() is PHP 5.4+, so unfortunately we need to rely upon Sodium_Compat here.
-	 */
-	protected function hex2bin( $data ) {
-		if ( function_exists( 'hex2bin' ) ) {
-			return hex2bin( $data );
-		}
-
-		if ( is_callable( array( 'ParagonIE_Sodium_Compat', 'hex2bin' ) ) ) {
-			return ParagonIE_Sodium_Compat::hex2bin( $data );
-		}
-
-		die( 'No compatible hex2bin() loaded' );
-	}
 }
 new WP_Signing_Verify();

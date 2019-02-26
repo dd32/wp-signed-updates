@@ -175,11 +175,11 @@ class WP_Signing_Signer {
 			$this->regenerate_keys();
 			$secret_key = get_option( 'signing_signer_secret_key' );
 		}
-		$secret_key = $this->hex2bin( $secret_key );
+		$secret_key = base64_decode( $secret_key );
 
 		$signature = sodium_crypto_sign_detached( $file_contents, $secret_key );
 
-		return bin2hex( $signature );
+		return base64_encode( $signature );
 	}
 
 	/**
@@ -195,7 +195,7 @@ class WP_Signing_Signer {
 		$secret_key = sodium_crypto_sign_secretkey( $keypair );
 
 		$signature = sodium_crypto_sign_detached( microtime(), $secret_key );
-		$signature = bin2hex( $signature );
+		$signature = base64_encode( $signature );
 
 		return $signature;
 	}
@@ -209,25 +209,11 @@ class WP_Signing_Signer {
 		$secret_key = sodium_crypto_sign_secretkey( $keypair );
 		$public_key = sodium_crypto_sign_publickey( $keypair );
 
-		update_option( 'signing_signer_secret_key', bin2hex( $secret_key ) );
-		update_option( 'signing_signer_public_key', bin2hex( $public_key ) );
+		update_option( 'signing_signer_secret_key', base64_encode( $secret_key ) );
+		update_option( 'signing_signer_public_key', base64_encode( $public_key ) );
 
 		return true;
 	}
 
-	/**
-	 * hex2bin() is PHP 5.4+, so unfortunately we need to rely upon Sodium_Compat here.
-	 */
-	protected function hex2bin( $data ) {
-		if ( function_exists( 'hex2bin' ) ) {
-			return hex2bin( $data );
-		}
-
-		if ( is_callable( array( 'ParagonIE_Sodium_Compat', 'hex2bin' ) ) ) {
-			return ParagonIE_Sodium_Compat::hex2bin( $data );
-		}
-
-		die( 'No compatible hex2bin() loaded' );
-	}
 }
 new WP_Signing_Signer();
