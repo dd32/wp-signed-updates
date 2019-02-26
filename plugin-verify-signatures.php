@@ -71,7 +71,7 @@ class WP_Signing_Verify {
 			return false;
 		}
 
-		$hash = $this->generichash_file( $file );
+		$hash = hash_file( 'sha512', $file, true );
 
 		foreach ( (array) $signatures as $signature ) {
 			$signature_raw = base64_decode( $signature );
@@ -89,27 +89,6 @@ class WP_Signing_Verify {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Uses Libsodium's GenericHash implementation of BLAKE2b to generate a files hash.
-	 *
-	 * @param string $file The file to hash.
-	 * @return string The Hash.
-	 */
-	public function generichash_file( $file ) {
-		$hasher = sodium_crypto_generichash_init();
-
-		$fp = fopen( $file, 'rb' );
-
-		while ( ! feof( $fp ) ) {
-			$buffer = fread( $fp, 8192 );
-			sodium_crypto_generichash_update( $hasher, $buffer );
-		}
-
-		fclose( $fp );
-
-		return sodium_crypto_generichash_final( $hasher );
 	}
 
 	/**
