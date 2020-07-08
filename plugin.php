@@ -45,22 +45,20 @@ class Plugin {
 		}
 
 		// Roots are always trusted for a key.
-		if ( 'key' === $what && in_array( $key, $this->trusted_root_keys ) ) {
-			return true;
+		if ( in_array( $key, $this->trusted_root_keys ) ) {
+			return 'key' === $what; // Root keys are only valid for keys.
 		}
 
 		// Fetch the manifest for the key, recursively.
 		if ( ! isset( $this->key_cache[ $key ] ) ) {
 			// Fetch key data from WordPress.org.
-			$req = wp_safe_remote_get( "https://api.wordpress.org/key-manifest/{$key}.json" );
-			echo "Fetching https://api.wordpress.org/key-manifest/{$key}.json ";
+			$req = wp_safe_remote_get( "https://api.wordpress.org/key-manifests/{$key}.json" );
 			if ( ! is_wp_error( $req ) && 200 == wp_remote_retrieve_response_code( $req ) ) {
 				$json = json_decode( wp_remote_retrieve_body( $req ) );
 				if ( $json && $this->validate_signed_json( $json ) ) {
 					$this->key_cache[ $key ] = $json;
 				}
 			}
-			echo wp_remote_retrieve_response_code( $req ) . "\n";
 		}
 
 		// Not known, not found on WordPress.org, don't care :)
