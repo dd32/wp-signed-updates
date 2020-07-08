@@ -25,16 +25,11 @@ if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
 require_once $_tests_dir . '/includes/functions.php';
 
 /**
- * Manually load the importer
+ * Manually load the plugins.
  */
 function _manually_load_signing_plugins() {
-	if ( ! class_exists( 'WP_Signing_Signer' ) && 'off' !== getenv( 'WP_SIGNING_SIGN' ) ) {
-		require dirname( dirname( __FILE__ ) ) . '/plugin-sign-zips.php';
-	}
-
-	if ( ! class_exists( 'WP_Signing_Verify' ) ) {
-		require dirname( dirname( __FILE__ ) ) . '/plugin-verify-signatures.php';
-	}
+	require_once dirname( dirname( __FILE__ ) ) . '/plugin.php';
+	require_once dirname( dirname( __FILE__ ) ) . '/plugin-mock-api.php';
 }
 tests_add_filter( 'plugins_loaded', '_manually_load_signing_plugins' );
 
