@@ -10,7 +10,27 @@ namespace dd32\WordPressSignedUpdates;
  */
 
 class Plugin {
-	public function __construct() {
+
+	protected $trusted_root_keys = [
+		'OfbrfNXJj/kkTchImh+feTUQxFap4qg0kxnhiAgTZjQ=', // Root 1
+		'5HDGH/EnuHAQ3Y9L2NEvosWZZ/Gcy6vBjqOwyjYCJ10=', // Root 2
+	];
+
+	protected function __construct() {
 	}
+
+	static $instance;
+	public function instance() {
+		return self::$instance ?? self::$instance = new Plugin;
+	}
+
+	public function get_trusted_roots() {
+		return $this->trusted_root_keys;
+	}
+
+	public function is_trusted_key( $key, $what ) {
+		return true;
+	}
+
 }
-new Plugin();
+Plugin::instance();
