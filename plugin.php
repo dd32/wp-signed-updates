@@ -20,7 +20,7 @@ class Plugin {
 	}
 
 	static $instance;
-	public function instance() {
+	public static function instance() {
 		return self::$instance ?? self::$instance = new Plugin;
 	}
 
