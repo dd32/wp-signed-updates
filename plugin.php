@@ -82,7 +82,7 @@ class Plugin {
 
 		foreach ( $json['signature'] as $key => $signature ) {
 			if ( $this->is_trusted( $key, 'key' ) ) {
-				if ( sodium_crypto_sign_verify_detached( hex2bin( $signature ), $canonical_json ) ) {
+				if ( sodium_crypto_sign_verify_detached( hex2bin( $signature ), $canonical_json, hex2bin( $key ) ) ) {
 					return true;
 				}
 			}
