@@ -39,6 +39,11 @@ class Plugin {
 			return false;
 		}
 
+		// Does key look base64 encoded?
+		if ( preg_match( '![^a-f0-9]!', $key ) ) {
+			$key = bin2hex( base64_decode( $key ) );
+		}
+
 		// Roots are always trusted for a key.
 		if ( 'key' === $what && in_array( $key, $this->trusted_root_keys ) ) {
 			return true;
