@@ -39,7 +39,7 @@ class Plugin {
 
 	public function generate_manifest_payload( $key ) {
 		// $key is hex encoded key.
-		foreach ( glob( "./keys/*.json" ) as $file ) {
+		foreach ( glob( __DIR__ . '/keys/*.json' ) as $file ) {
 			$data = json_decode( $json = file_get_contents( $file ), true );
 			if ( $data && isset( $data['key'] ) && $key === $data['key'] ) {
 				return $json;
