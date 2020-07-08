@@ -13,14 +13,11 @@ env:
 
 matrix:
   include:
-    - php: 7.3
-      env:
-       - WP_VERSION=trunk
-       - WP_SIGNING_SIGN=off
-    - php: 7.3
+    - php: 7.4
       env: WP_VERSION=trunk
-    - php: 7.3
+    - php: 7.4
       env: WP_VERSION=latest
+    - php: 7.3
     - php: 7.2
     - php: 7.1
     - php: 7.1
@@ -29,19 +26,11 @@ matrix:
     - php: 7.0
       env: WP_SIGNING_EXT_LIBSODIUM=1
     - php: 5.6
-    - php: 5.5
-    - php: 5.4
-    - php: 5.3
-      dist: precise
-    - php: 5.2
-      dist: precise
-    - php: nightly
   allow_failures:
     - php: nightly
-    - php: 7.3
+    - php: 7.4
       env:
        - WP_VERSION=trunk
-       - WP_SIGNING_SIGN=off
 
 before_script:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
@@ -61,11 +50,7 @@ before_script:
   - php -m
   - |
     bash phpunit/install.sh wordpress_test root '' localhost $WP_VERSION
-    if [[ "$TRAVIS_PHP_VERSION" != "5.2" ]]; then
-      composer global require "phpunit/phpunit=4.8.*|5.7.*"
-    else
-      echo "PHP 5.2: Skipping composer for PHPUnit, relying upon builtin PHPUnit."
-    fi
+    composer global require "phpunit/phpunit=4.8.*|5.7.*"
 
 script:
   - |
