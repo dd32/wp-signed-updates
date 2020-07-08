@@ -35,7 +35,7 @@ class Test_Trust extends WP_Signing_UnitTestCase {
 	function test_intermediate_is_not_trusted_to_sign_responses() {
 		$key = file_get_contents( SIGNING_PLUGIN_DIR . '/keys/intermediate.pub' );
 
-		$this->assertTrue( Plugin::instance()->is_trusted( $key, 'api' ) );
+		$this->assertFalse( Plugin::instance()->is_trusted( $key, 'api' ) );
 	}
 
 	function test_api_key_is_trusted_to_sign_responses() {
@@ -47,6 +47,6 @@ class Test_Trust extends WP_Signing_UnitTestCase {
 	function test_api_key_is_not_trusted_to_sign_keys() {
 		$key = file_get_contents( SIGNING_PLUGIN_DIR . '/keys/api.pub' );
 
-		$this->assertTrue( Plugin::instance()->is_trusted( $key, 'key' ) );
+		$this->assertFalse( Plugin::instance()->is_trusted( $key, 'key' ) );
 	}
 }
