@@ -73,7 +73,11 @@ class Plugin {
 	protected function validate_signed_json( $json ) {
 		$canonical_json = $this->json_canonical_encode( $json );
 
-		foreach ( $json['signatures'] as $key => $signature ) {
+		if ( ! isset( $json['signature'] ) ) {
+			return false;
+		}
+
+		foreach ( $json['signature'] as $key => $signature ) {
 			if ( $this->is_trusted( $key, 'key' ) ) {
 				if ( sodium_crypto_sign_verify_detached( hex2bin( $signature ), $canonical_json ) ) {
 					return true;
