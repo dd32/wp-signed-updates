@@ -9,6 +9,8 @@ namespace dd32\WordPressSignedUpdates\MockAPI;
  * Author URI: https://dd32.id.au/
  */
 
+include_once __DIR__ . '/compat.php';
+
 class Plugin {
 	protected function __construct() {
 		add_filter( 'pre_http_request', [ $this, 'intercept' ], 10, 3 );

@@ -9,7 +9,7 @@ namespace dd32\WordPressSignedUpdates;
  * Author URI: https://dd32.id.au/
  */
 
-include_once __DIR__ . 'compat.php';
+include_once __DIR__ . '/compat.php';
 
 class Plugin {
 
