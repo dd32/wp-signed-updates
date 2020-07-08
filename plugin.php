@@ -45,7 +45,7 @@ class Plugin {
 		}
 
 		// Roots are always trusted for a key.
-		if ( in_array( $key, $this->trusted_root_keys ) ) {
+		if ( in_array( $key, $this->trusted_root_keys, true ) ) {
 			return 'key' === $what; // Root keys are only valid for keys.
 		}
 
@@ -54,7 +54,7 @@ class Plugin {
 			// Fetch key data from WordPress.org.
 			$req = wp_safe_remote_get( "https://api.wordpress.org/key-manifests/{$key}.json" );
 			if ( ! is_wp_error( $req ) && 200 == wp_remote_retrieve_response_code( $req ) ) {
-				$json = json_decode( wp_remote_retrieve_body( $req ) );
+				$json = json_decode( wp_remote_retrieve_body( $req ), true );
 				if ( $json && $this->validate_signed_json( $json ) ) {
 					$this->key_cache[ $key ] = $json;
 				}
