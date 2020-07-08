@@ -55,11 +55,13 @@ class Plugin {
 			$req = wp_safe_remote_get( "https://api.wordpress.org/key-manifests/{$key}.json" );
 			if ( ! is_wp_error( $req ) && 200 == wp_remote_retrieve_response_code( $req ) ) {
 				$json = json_decode( wp_remote_retrieve_body( $req ), true );
-				if ( $json && $this->validate_signed_json( $json ) ) {
-					$this->key_cache[ $key ] = $json;
-				} elseif ( $json ) {
-					// Found a JSON document, but we don't trust it. Cache it for next time.
+				if ( $json ) {
+					// We've got a key, but we're not sure it's valid yet.
 					$this->key_cache[ $key ] = false;
+
+					if ( $key === $json['key'] && $this->validate_signed_json( $json ) ) {
+						$this->key_cache[ $key ] = $json;
+					}
 				}
 			}
 		}
