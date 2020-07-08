@@ -16,9 +16,9 @@ class Plugin {
 		add_filter( 'pre_http_request', [ $this, 'intercept' ], 10, 3 );
 	}
 
-	static $instance;
+	static $instance = false;
 	public static function instance() {
-		return self::$instance ?? self::$instance = new Plugin;
+		return self::$instance ?: self::$instance = new Plugin;
 	}
 
 	public function intercept( $filter_value, $args, $url ) {

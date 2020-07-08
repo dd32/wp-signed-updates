@@ -24,9 +24,9 @@ class Plugin {
 	protected function __construct() {
 	}
 
-	static $instance;
+	static $instance = false;
 	public static function instance() {
-		return self::$instance ?? self::$instance = new Plugin;
+		return self::$instance ?: self::$instance = new Plugin;
 	}
 
 	public function get_trusted_roots() {
