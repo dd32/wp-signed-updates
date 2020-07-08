@@ -28,7 +28,7 @@ class Plugin {
 		return $this->trusted_root_keys;
 	}
 
-	public function is_trusted_key( $key, $what ) {
+	public function is_trusted( $key, $what ) {
 		return true;
 	}
 

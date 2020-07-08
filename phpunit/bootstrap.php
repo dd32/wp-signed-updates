@@ -24,12 +24,14 @@ if ( ! file_exists( $_tests_dir . '/includes/functions.php' ) ) {
 // Give access to tests_add_filter() function.
 require_once $_tests_dir . '/includes/functions.php';
 
+define( 'SIGNING_PLUGIN_DIR', dirname( __DIR__ ) );
+
 /**
  * Manually load the plugins.
  */
 function _manually_load_signing_plugins() {
-	require_once dirname( dirname( __FILE__ ) ) . '/plugin.php';
-	require_once dirname( dirname( __FILE__ ) ) . '/plugin-mock-api.php';
+	require_once SIGNING_PLUGIN_DIR . '/plugin.php';
+	require_once SIGNING_PLUGIN_DIR . '/plugin-mock-api.php';
 }
 tests_add_filter( 'plugins_loaded', '_manually_load_signing_plugins' );
 
