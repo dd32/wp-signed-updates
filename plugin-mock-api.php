@@ -60,4 +60,4 @@ class Plugin {
 		);
 	}
 }
-Plugin()::instance();
+Plugin::instance();
