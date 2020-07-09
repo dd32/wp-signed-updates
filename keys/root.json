@@ -1,5 +1,6 @@
 {
 	"key": "39f6eb7cd5c98ff9244dc8489a1f9f793510c456a9e2a8349319e18808136634",
+	"desc": "Root Key #1",
 	"date": "2020-01-01T00:00:00Z",
 	"validUntil": "2035-01-01T00:00:00Z",
 	"canSign": [ "key" ],

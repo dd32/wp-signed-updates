@@ -1,9 +1,12 @@
 {
-	"key": "daa90184b8a17f7ba1ac5789c36ceb5f3d486f5559c40a0c1c0a55d1e08ba6bc",
-	"date": "2020-07-08T08:08:17Z",
-	"validUntil": "2021-04-01T00:00:00Z",
-	"canSign": [ "api" ],
-	"signature": {
-		"55e8b887f45379d7100d0ba851c012a447f800b28377418fbc6b2d7956b11e83": "25591c44292d8c809bb94ba16008dd793259a802a684e264626685bd60747fbce360b900b721c2b80ca7a160991bdf9db41dc05855a02c26fc56012f73f73b01"
-	}
+    "key": "daa90184b8a17f7ba1ac5789c36ceb5f3d486f5559c40a0c1c0a55d1e08ba6bc",
+    "desc": "API Response Signing Key",
+    "date": "2020-07-08T08:08:17Z",
+    "validUntil": "2021-04-01T00:00:00Z",
+    "canSign": [
+        "api"
+    ],
+    "signature": {
+        "55e8b887f45379d7100d0ba851c012a447f800b28377418fbc6b2d7956b11e83": "63d26ecf7c7600fabdb1d41da2595f0a9b041285fcf20ffc56b5d0d52512a80365327da6637ed2d49e45455cfc065dd66ce79fb5366d4928ee93c8017e50e805"
+    }
 }
