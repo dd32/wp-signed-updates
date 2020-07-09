@@ -141,11 +141,11 @@ class Plugin {
 
 	public function find_key_for( $what ) {
 		foreach ( glob( __DIR__ . '/keys/*.json' ) as $file ) {
-			$data = json_decode( $json = file_get_contents( $file ), true );
+			$data = json_decode( file_get_contents( $file ), true );
 			if ( $data && isset( $data['key'] ) ) {
 				if ( VerificationPlugin::instance()->can_trust( $data['key'], $what, time() ) ) {
 					$data['privkey'] = file_get_contents( __DIR__ . '/keys/' . basename( $file, '.json' ) . '.priv' );
-					return $json;
+					return $data;
 				}
 			}
 		}
