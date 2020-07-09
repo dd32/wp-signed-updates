@@ -98,6 +98,10 @@ class Plugin {
 
 	public function generate_file_manifest_payload( $type, $file ) {
 		$zip_signing_key = $this->find_key_for( $type );
+		if ( ! $zip_signing_key ) {
+			// Plural...
+			$zip_signing_key = $this->find_key_for( $type . 's' );
+		}
 		$api_signing_key = $this->find_key_for( 'api' );
 
 		if ( ! isset( $this->downloaded_file_hashes[ $file ] ) ) {
