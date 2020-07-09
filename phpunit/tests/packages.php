@@ -15,6 +15,7 @@ class Test_Packages extends WP_Signing_UnitTestCase {
 		$this->assertStringContainsString( 'rel="manifest"', $req['headers']['link'] );
 
 		$manifest_url = explode( ';', $req['headers']['link'] )[0];
+		$manifest_url = trim( $manifest_url, '<>' );
 
 		$this->assertFalse( str_contains( $manifest_url, 'latest-stable' ) );
 

@@ -72,7 +72,7 @@ class Plugin {
 				$file = basename( $file, '.zip' );
 
 				$manifest_url = 'https://downloads.wordpress.org/file-manifest/' . $type . '/' . $file . '.json';
-				$response['headers']['Link'] = $manifest_url . '; rel="manifest"';
+				$response['headers']['Link'] = "<$manifest_url>; rel=\"manifest\"";
 
 				if ( $response['filename'] ) {
 					$this->downloaded_file_hashes[ $file ] = hash_file( 'sha384', $response['filename'], true );
