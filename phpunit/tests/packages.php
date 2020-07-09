@@ -35,7 +35,7 @@ class Test_Packages extends WP_Signing_UnitTestCase {
 		// Check that the hash is signed.
 		foreach ( $manifest['hash'] as $hash ) {
 			$this->assertTrue(
-				Plugin::instance()->validate_signature( 'plugin', $hash['date'], $hash['hash'], $hash['signatures'] ),
+				Plugin::instance()->validate_signature( 'plugins', $hash['date'], $hash['hash'], $hash['signature'] ),
 				"Hash signature failed."
 			);
 		}
