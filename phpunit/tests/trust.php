@@ -54,8 +54,8 @@ class Test_Trust extends WP_Signing_UnitTestCase {
 		$key = file_get_contents( SIGNING_PLUGIN_DIR . '/keys/packages.pub' );
 
 		$this->assertTrue( Plugin::instance()->is_trusted( $key, 'core' ) );
-		$this->assertTrue( Plugin::instance()->is_trusted( $key, 'api' ) );
-		$this->assertTrue( Plugin::instance()->is_trusted( $key, 'api' ) );
+		$this->assertTrue( Plugin::instance()->is_trusted( $key, 'plugins' ) );
+		$this->assertTrue( Plugin::instance()->is_trusted( $key, 'themes' ) );
 	}
 
 	/**
