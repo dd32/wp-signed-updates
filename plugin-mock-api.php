@@ -27,58 +27,59 @@ class Plugin {
 	}
 
 	public function intercept( $filter_value, $args, $url ) {
-		$url_parts = wp_parse_url( $url );
+		$url_parts    = wp_parse_url( $url );
+		$is_api       = ( 'api.wordpress.org' === $url_parts['host'] );
+		$is_downloads = ( 'downloads.wordpress.org' === $url_parts['host'] || 'downloads.w.org' === $url_parts['host'] );
 
-		if ( 'api.wordpress.org' === $url_parts['host'] ) {
-			if (
-				str_starts_with( $url_parts['path'], '/key-manifests/' ) &&
-				str_ends_with( $url_parts['path'], '.json' )
-			) {
-				$key = basename( $url_parts['path'], '.json' );
-				return $this->mock_http_response( $this->generate_manifest_payload( $key ) );
-			}
+		if (
+			$is_downloads &&
+			str_starts_with( $url_parts['path'], '/key-manifests/' ) &&
+			str_ends_with( $url_parts['path'], '.json' )
+		) {
+			$key = basename( $url_parts['path'], '.json' );
+			return $this->mock_http_response( $this->generate_manifest_payload( $key ) );
 		}
 
-		if ( 'downloads.wordpress.org' === $url_parts['host'] ) {
-			if (
-				str_starts_with( $url_parts['path'], '/file-manifests/' ) &&
-				str_ends_with( $url_parts['path'], '.json' )
-			) {
-				$file = basename( $url_parts['path'], '.json' );
-				$type = explode( '/', $url_parts['path'] )[2];
+		if (
+			$is_downloads &&
+			str_starts_with( $url_parts['path'], '/file-manifests/' ) &&
+			str_ends_with( $url_parts['path'], '.json' )
+		) {
+			$file = basename( $url_parts['path'], '.json' );
+			$type = explode( '/', $url_parts['path'] )[2];
 
-				return $this->mock_http_response( $this->generate_file_manifest_payload( $type, $file ) );
-			}
+			return $this->mock_http_response( $this->generate_file_manifest_payload( $type, $file ) );
 		}
 
 		return $filter_value;
 	}
 
 	public function alter_response( $response, $parsed_args, $url ) {
-		$url_parts = wp_parse_url( $url );
+		$url_parts    = wp_parse_url( $url );
+		$is_api       = ( 'api.wordpress.org' === $url_parts['host'] );
+		$is_downloads = ( 'downloads.wordpress.org' === $url_parts['host'] || 'downloads.w.org' === $url_parts['host'] );
 
-		if ( 'downloads.wordpress.org' === $url_parts['host'] ) {
-			if (
-				str_ends_with( $url_parts['path'], '.zip' )
-			) {
-				$type = explode( '/', $url_parts['path'] )[1];
-				$file = basename( $url_parts['path'] );
+		if (
+			$is_downloads &&
+			str_ends_with( $url_parts['path'], '.zip' )
+		) {
+			$type = explode( '/', $url_parts['path'] )[1];
+			$file = basename( $url_parts['path'] );
 
-				// Check the Content-Disposition for the canonical name.
-				if ( str_contains( $response['headers']['content-disposition'], 'filename=' ) ) {
-					$file = explode( 'filename=', $response['headers']['content-disposition'] )[1];
-				}
+			// Check the Content-Disposition for the canonical name.
+			if ( str_contains( $response['headers']['content-disposition'], 'filename=' ) ) {
+				$file = explode( 'filename=', $response['headers']['content-disposition'] )[1];
+			}
 
-				$file = basename( $file, '.zip' );
+			$file = basename( $file, '.zip' );
 
-				$manifest_url = 'https://downloads.wordpress.org/file-manifests/' . $type . '/' . $file . '.json';
-				$response['headers']['link'] = "<$manifest_url>; rel=\"manifest\"";
+			$manifest_url = 'https://downloads.wordpress.org/file-manifests/' . $type . '/' . $file . '.json';
+			$response['headers']['link'] = "<$manifest_url>; rel=\"manifest\"";
 
-				if ( $response['filename'] ) {
-					$this->downloaded_file_hashes[ $file ] = hash_file( 'sha384', $response['filename'] );
-				} else {
-					$this->downloaded_file_hashes[ $file ] = hash( 'sha384', $response['body'] );
-				}
+			if ( $response['filename'] ) {
+				$this->downloaded_file_hashes[ $file ] = hash_file( 'sha384', $response['filename'] );
+			} else {
+				$this->downloaded_file_hashes[ $file ] = hash( 'sha384', $response['body'] );
 			}
 		}
 
