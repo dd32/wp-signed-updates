@@ -19,7 +19,10 @@ class Test_Packages extends WP_Signing_UnitTestCase {
 
 		$this->assertFalse( str_contains( $manifest_url, 'latest-stable' ), "Manifest URL invalid." );
 
-		$req      = wp_remote_get( $manifest_url );
+		$req = wp_remote_get( $manifest_url );
+
+		$this->assertEquals( 200, wp_remote_retrieve_response_code( $req ), "Invalid response code." );
+
 		$manifest = json_decode( wp_remote_retrieve_body( $req ), true );
 
 		// Check that the API response has a valid signature.
