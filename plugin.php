@@ -56,11 +56,6 @@ class Plugin {
 			return false;
 		}
 
-		// Does key look base64 encoded?
-		if ( preg_match( '![^a-f0-9]!', $key ) ) {
-			$key = bin2hex( base64_decode( $key ) );
-		}
-
 		// Fetch the manifest for the key, recursively.
 		if ( ! isset( $this->key_cache[ $key ] ) ) {
 			// Fetch key data from WordPress.org.

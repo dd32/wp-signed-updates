@@ -9,10 +9,7 @@ include __DIR__ . '/plugin.php';
 
 list( , $key_to_sign_file, $signing_key ) = $argv;
 
-$signing_key = file_get_contents( $signing_key );
-if ( preg_match( '![^a-f0-9]!', $signing_key ) ) {
-	$signing_key = bin2hex( base64_decode( $signing_key ) );
-}
+$signing_key     = file_get_contents( $signing_key );
 $signing_key_pub = bin2hex( sodium_crypto_sign_publickey_from_secretkey( hex2bin( $signing_key ) ) );
 
 $key_to_sign_base = explode( '.', $key_to_sign_file, 2 )[0];
@@ -32,11 +29,6 @@ if ( ! file_exists( $key_to_sign_base . '.pub' ) ) {
 	), JSON_PRETTY_PRINT ) );
 
 	die( "New Key " . basename( $key_to_sign_base ) . " Created. Please update " . basename( $key_to_sign_base ) . ".json before running again.\n" );
-}
-
-$key_to_sign_key = file_get_contents( $key_to_sign_base . '.pub' );
-if ( preg_match( '![^a-f0-9]!', $key_to_sign_key ) ) {
-	$key_to_sign_key = bin2hex( base64_decode( $key_to_sign_key ) );
 }
 
 $signed_json_file = $key_to_sign_base . '.json';
