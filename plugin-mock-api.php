@@ -45,7 +45,7 @@ class Plugin {
 				str_ends_with( $url_parts['path'], '.json' )
 			) {
 				$file = basename( $url_parts['path'], '.json' );
-				$type = explode( '/', $url_parts['path'] )[1];
+				$type = explode( '/', $url_parts['path'] )[2];
 
 				return $this->mock_http_response( $this->generate_file_manifest_payload( $type, $file ) );
 			}
