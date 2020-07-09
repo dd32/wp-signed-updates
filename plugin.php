@@ -51,7 +51,7 @@ class Plugin {
 	}
 
 	public function is_trusted( $key, $what = '' ) {
-		$valid_whats = [ 'key', 'api', 'core', 'plugins', 'themes', 'translations' ];
+		$valid_whats = [ 'key', 'api', 'core', 'nightly', 'plugins', 'themes', 'translations' ];
 		if ( ! in_array( $what, $valid_whats ) ) {
 			return false;
 		}

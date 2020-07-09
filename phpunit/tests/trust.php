@@ -71,7 +71,7 @@ class Test_Trust extends WP_Signing_UnitTestCase {
 	}
 
 	function data_find_all_key_manifest_matrix() {
-		$known_types = [ 'key', 'api', 'core', 'plugins', 'themes', 'translations' ];
+		$known_types = [ 'key', 'api', 'core', 'nightly', 'plugins', 'themes', 'translations' ];
 
 		$return = [];
 
