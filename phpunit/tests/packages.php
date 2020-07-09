@@ -11,19 +11,19 @@ class Test_Packages extends WP_Signing_UnitTestCase {
 		);
 
 		$this->assertNotWPError( $req );
-		$this->assertTrue( !empty( $req['headers']['link'] ) );
-		$this->assertTrue( str_contains( $req['headers']['link'], 'rel="manifest"' ) );
+		$this->assertTrue( !empty( $req['headers']['link'] ), "No link header present" );
+		$this->assertTrue( str_contains( $req['headers']['link'], 'rel="manifest"' ), "Manifest Link malformed. " . $req['headers']['link'] );
 
 		$manifest_url = explode( ';', $req['headers']['link'] )[0];
 		$manifest_url = trim( $manifest_url, '<>' );
 
-		$this->assertFalse( str_contains( $manifest_url, 'latest-stable' ) );
+		$this->assertFalse( str_contains( $manifest_url, 'latest-stable' ), "Manifest URL invalid." );
 
 		$req      = wp_remote_get( $manifest_url );
 		$manifest = json_decode( wp_remote_retrieve_body( $req ), true );
 
 		// Check that the API response has a valid signature.
-		$this->assertTrue( Plugin::instance()->validate_signed_json( $manifest ) );
+		$this->assertTrue( Plugin::instance()->validate_signed_json( $manifest ), "Manifest signature failed." );
 
 		$this->assertEquals( 'plugin', $manifest['type'] );
 
@@ -32,7 +32,8 @@ class Test_Packages extends WP_Signing_UnitTestCase {
 		// Check that the hash is signed.
 		foreach ( $manifest['hash'] as $hash ) {
 			$this->assertTrue(
-				Plugin::instance()->validate_signature( 'plugin', $hash['date'], $hash['hash'], $hash['signatures'] )
+				Plugin::instance()->validate_signature( 'plugin', $hash['date'], $hash['hash'], $hash['signatures'] ),
+				"Hash signature failed."
 			);
 		}
 
