@@ -144,7 +144,7 @@ class Plugin {
 			$data = json_decode( $json = file_get_contents( $file ), true );
 			if ( $data && isset( $data['key'] ) ) {
 				if ( VerificationPlugin::instance()->can_trust( $data['key'], $what, time() ) ) {
-					$data['privkey'] = __DIR__ . '/keys/' . basename( $file, '.json' ) . '.priv';
+					$data['privkey'] = file_get_contents( __DIR__ . '/keys/' . basename( $file, '.json' ) . '.priv' );
 					return $json;
 				}
 			}
