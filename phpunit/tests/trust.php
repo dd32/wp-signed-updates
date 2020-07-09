@@ -10,7 +10,7 @@ class Test_Trust extends WP_Signing_UnitTestCase {
 		$this->assertFalse( Plugin::instance()->is_trusted( $key, 'unknown-context' ) );
 	}
 
-	function test_cert_expiry() {
+	function test_key_expiry() {
 		$key = file_get_contents( SIGNING_PLUGIN_DIR . '/keys/expired-intermediate.pub' );
 
 		$this->assertTrue( Plugin::instance()->is_trusted( $key ) );
@@ -19,7 +19,7 @@ class Test_Trust extends WP_Signing_UnitTestCase {
 		$this->assertFalse( Plugin::instance()->is_trusted_for_date( $key, '2020-09-01T00:00:00Z' ) );
 	}
 
-	function test_cert_expiry_invalid_cert() {
+	function test_key_expiry_invalid_key() {
 		$key = file_get_contents( SIGNING_PLUGIN_DIR . '/keys/invalid-api.pub' );
 
 		$this->assertFalse( Plugin::instance()->is_trusted( $key ) );
