@@ -75,14 +75,13 @@ class Test_Trust extends WP_Signing_UnitTestCase {
 
 		$return = [];
 
-		foreach ( glob( SIGNING_PLUGIN_DIR . '/keys/*.json' ) as $json_file ) {
+		foreach ( glob( SIGNING_PLUGIN_DIR . '/keys/*.json' ) as $file ) {
 			$base = explode( '.', $file )[0];
 
 			$json = json_decode( file_get_contents( $base . '.json' ), true );
-			$pub_key = file_get_contents( $base . '.pub' );
 
 			$return[] = [
-				$pub_key,
+				$json['key'],
 				$json['canSign'],
 				array_diff( $known_types, $json['canSign'] )
 			];
