@@ -50,13 +50,13 @@ class Plugin {
 		}
 
 		// Fetch the manifest for the key, recursively.
-		if ( empty( $this->key_cache[ $key ] ) ) {
+		if ( ! isset( $this->key_cache[ $key ] ) ) {
 			// Fetch key data from WordPress.org.
 			$req = wp_safe_remote_get( "https://api.wordpress.org/key-manifests/{$key}.json" );
-			if ( ! is_wp_error( $req ) && 200 == wp_remote_retrieve_response_code( $req ) ) {
+			if ( 200 === wp_remote_retrieve_response_code( $req ) ) {
 				$json = json_decode( wp_remote_retrieve_body( $req ), true );
 				if ( $json ) {
-					// We've got a key, but we're not sure it's valid yet.
+					// We've got a manifest, but we're not sure it's valid yet.
 					$this->key_cache[ $key ] = false;
 
 					if ( $key === $json['key'] && $this->validate_signed_json( $json ) ) {
