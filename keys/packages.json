@@ -1,0 +1,16 @@
+{
+    "key": "18b76bff94bb5e44fbf5f4042e3b1d1940f24309f85ab7eca981519d6977e502",
+    "desc": "Key to sign ZIP files",
+    "date": "2020-07-09T06:08:05Z",
+    "validUntil": "2025-07-09T06:08:05Z",
+    "canSign": [
+        "plugins",
+        "themes",
+        "translations",
+        "core",
+        "nightly"
+    ],
+    "signature": {
+        "55e8b887f45379d7100d0ba851c012a447f800b28377418fbc6b2d7956b11e83": "2aefdb920cc9ee06fce3f223a90c2fed85e552ee57a694630aa046ade398add88de19470f68680ca414f7d18704c962426199f8112c27558cf2e9a76990d2704"
+    }
+}
