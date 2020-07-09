@@ -81,10 +81,12 @@ class Plugin {
 	}
 
 	public function key_is_valid_for_date( $key, $date ) {
+		$date = is_int( $date ) ? $date : strtotime( $date );
+
 		return
 			! empty( $this->key_cache[ $key ] ) &&
-			strtotime( $date ) >= strtotime( $this->key_cache[ $key ]['date'] ) &&
-			strtotime( $date ) <= strtotime( $this->key_cache[ $key ]['validUntil'] );
+			$date >= strtotime( $this->key_cache[ $key ]['date'] ) &&
+			$date <= strtotime( $this->key_cache[ $key ]['validUntil'] );
 	}
 
 	public function validate_signed_json( $json ) {
