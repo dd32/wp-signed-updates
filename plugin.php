@@ -89,7 +89,7 @@ class Plugin {
 			$date <= strtotime( $this->key_cache[ $key ]['validUntil'] );
 	}
 
-	public function validate_signed_json( $json ) {
+	public function validate_signed_json( $json, $what = 'key' ) {
 		$canonical_json = $this->json_canonical_encode( $json );
 
 		if ( ! isset( $json['signature'] ) ) {
@@ -97,7 +97,7 @@ class Plugin {
 		}
 
 		foreach ( $json['signature'] as $key => $signature ) {
-			if ( $this->can_trust( $key, 'key', $json['date'] ) ) {
+			if ( $this->can_trust( $key, $what, $json['date'] ) ) {
 				if ( sodium_crypto_sign_verify_detached( hex2bin( $signature ), $canonical_json, hex2bin( $key ) ) ) {
 					return true;
 				}

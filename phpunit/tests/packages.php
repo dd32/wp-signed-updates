@@ -26,7 +26,7 @@ class Test_Packages extends WP_Signing_UnitTestCase {
 		$manifest = json_decode( wp_remote_retrieve_body( $req ), true );
 
 		// Check that the API response has a valid signature.
-		$this->assertTrue( Plugin::instance()->validate_signed_json( $manifest ), "Manifest signature failed." );
+		$this->assertTrue( Plugin::instance()->validate_signed_json( $manifest, 'api' ), "Manifest signature failed." );
 
 		$this->assertEquals( 'plugin', $manifest['type'] );
 
