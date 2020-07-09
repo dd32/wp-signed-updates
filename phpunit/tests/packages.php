@@ -12,7 +12,7 @@ class Test_Packages extends WP_Signing_UnitTestCase {
 
 		$this->assertNotWPError( $req );
 		$this->assertTrue( !empty( $req['headers']['link'] ) );
-		$this->assertStringContainsString( 'rel="manifest"', $req['headers']['link'] );
+		$this->assertTrue( str_contains( $req['headers']['link'], 'rel="manifest"' ) );
 
 		$manifest_url = explode( ';', $req['headers']['link'] )[0];
 		$manifest_url = trim( $manifest_url, '<>' );
