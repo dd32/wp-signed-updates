@@ -15,13 +15,28 @@ class Plugin {
 
 	protected $trusted_root_keys = [
 		// Hex encoded binary ed25519 keys
-		'39f6eb7cd5c98ff9244dc8489a1f9f793510c456a9e2a8349319e18808136634', // Root 1
-		'e470c61ff127b87010dd8f4bd8d12fa2c59967f19ccbabc18ea3b0ca3602275d', // Root 2
+		'39f6eb7cd5c98ff9244dc8489a1f9f793510c456a9e2a8349319e18808136634' => [
+			'key'        => '39f6eb7cd5c98ff9244dc8489a1f9f793510c456a9e2a8349319e18808136634',
+			'date'       => '2020-01-01T00:00:00Z',
+			'validUntil' => '2035-01-01T00:00:00Z',
+			'canSign'    => [ 'key' ],
+			'signature'  => []
+		],
+		'e470c61ff127b87010dd8f4bd8d12fa2c59967f19ccbabc18ea3b0ca3602275d' => [
+			'key'        => 'e470c61ff127b87010dd8f4bd8d12fa2c59967f19ccbabc18ea3b0ca3602275d',
+			'date'       => '2020-01-01T00:00:00Z',
+			'validUntil' => '2035-01-01T00:00:00Z',
+			'canSign'    => [ 'key' ],
+			'signature'  => []
+		]
 	];
 
 	protected $key_cache = [];
 
 	protected function __construct() {
+		foreach ( $this->trusted_root_keys as $key => $data ) {
+			$this->key_cache[ $key ] = $data;
+		}
 	}
 
 	static $instance = false;
@@ -42,11 +57,6 @@ class Plugin {
 		// Does key look base64 encoded?
 		if ( preg_match( '![^a-f0-9]!', $key ) ) {
 			$key = bin2hex( base64_decode( $key ) );
-		}
-
-		// Roots are always trusted for a key.
-		if ( in_array( $key, $this->trusted_root_keys, true ) ) {
-			return 'key' === $what; // Root keys are only valid for keys.
 		}
 
 		// Fetch the manifest for the key, recursively.
