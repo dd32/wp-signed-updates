@@ -46,7 +46,13 @@ class Plugin {
 		return self::$instance ?: self::$instance = new Plugin;
 	}
 
-	public function is_trusted( $key ) {
+	public function can_trust( $key, $what, $date ) {
+		return $this->key_is_trusted( $key ) &&
+			$this->key_is_valid_for( $key, $what ) &&
+			$this->key_is_valid_for_date( $key, $date );
+	}
+
+	public function key_is_trusted( $key ) {
 		// Fetch the manifest for the key, recursively.
 		if ( ! isset( $this->key_cache[ $key ] ) ) {
 			// Fetch key data from WordPress.org.
@@ -89,11 +95,7 @@ class Plugin {
 		}
 
 		foreach ( $json['signature'] as $key => $signature ) {
-			if (
-				$this->is_trusted( $key ) &&
-				$this->key_is_valid_for( $key, 'key' ) &&
-				$this->key_is_valid_for_date( $key, $json['date'] )
-			) {
+			if ( $this->can_trust( $key, 'key', $json['date'] ) ) {
 				if ( sodium_crypto_sign_verify_detached( hex2bin( $signature ), $canonical_json, hex2bin( $key ) ) ) {
 					return true;
 				}
