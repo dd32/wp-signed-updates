@@ -1,0 +1,12 @@
+{
+    "key": "c5bb068cb92492f586c789de0a7ee2834da113b5cb0f28874abe9d8ab0826dae",
+    "desc": "Invalid Key, this key is dated after the signer expired.",
+    "date": "2020-09-01T00:00:00Z",
+    "validUntil": "2030-01-01T00:00:00Z",
+    "canSign": [
+        "api"
+    ],
+    "signature": {
+        "14be2be02b18caa81c74096a163135aec2bc478ff0c5134db08d73267d88c985": "b6965aee07348f9ea7e0e9b34e14d4aedb79c992aa8081015028ee4c49061465d5663b1f979afc41c877cb35946b8966c50a83ccd5fd65b14b25db353f8af10a"
+    }
+}

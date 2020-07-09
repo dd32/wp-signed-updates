@@ -46,16 +46,7 @@ class Plugin {
 		return self::$instance ?: self::$instance = new Plugin;
 	}
 
-	public function get_trusted_roots() {
-		return $this->trusted_root_keys;
-	}
-
-	public function is_trusted( $key, $what = '' ) {
-		$valid_whats = [ 'key', 'api', 'core', 'nightly', 'plugins', 'themes', 'translations' ];
-		if ( ! in_array( $what, $valid_whats ) ) {
-			return false;
-		}
-
+	public function is_trusted( $key ) {
 		// Fetch the manifest for the key, recursively.
 		if ( ! isset( $this->key_cache[ $key ] ) ) {
 			// Fetch key data from WordPress.org.
@@ -73,13 +64,21 @@ class Plugin {
 			}
 		}
 
-		// Not known, not found on WordPress.org, don't care :)
-		if ( empty( $this->key_cache[ $key ] ) ) {
-			return false;
-		}
+		// Not known, not found, don't care :)
+		return ! empty( $this->key_cache[ $key ] );
+	}
 
-		// We know about this key, but can it sign what we want?
-		return in_array( $what, $this->key_cache[ $key ]['canSign'], true );
+	public function key_is_valid_for( $key, $what ) {
+		return
+			! empty( $this->key_cache[ $key ] ) &&
+			in_array( $what, $this->key_cache[ $key ]['canSign'], true );
+	}
+
+	public function key_is_valid_for_date( $key, $date ) {
+		return
+			! empty( $this->key_cache[ $key ] ) &&
+			strtotime( $date ) >= strtotime( $this->key_cache[ $key ]['date'] ) &&
+			strtotime( $date ) <= strtotime( $this->key_cache[ $key ]['validUntil'] );
 	}
 
 	protected function validate_signed_json( $json ) {
@@ -90,7 +89,11 @@ class Plugin {
 		}
 
 		foreach ( $json['signature'] as $key => $signature ) {
-			if ( $this->is_trusted( $key, 'key' ) ) {
+			if (
+				$this->is_trusted( $key ) &&
+				$this->key_is_valid_for( $key, 'key' ) &&
+				$this->key_is_valid_for_date( $key, $json['date'] )
+			) {
 				if ( sodium_crypto_sign_verify_detached( hex2bin( $signature ), $canonical_json, hex2bin( $key ) ) ) {
 					return true;
 				}

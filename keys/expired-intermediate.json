@@ -1,0 +1,12 @@
+{
+    "key": "14be2be02b18caa81c74096a163135aec2bc478ff0c5134db08d73267d88c985",
+    "desc": "Expired Intermediate Key",
+    "date": "2020-01-01T00:00:00Z",
+    "validUntil": "2020-06-01T00:00:00Z",
+    "canSign": [
+        "key"
+    ],
+    "signature": {
+        "39f6eb7cd5c98ff9244dc8489a1f9f793510c456a9e2a8349319e18808136634": "681445c35b2d1ab8919a8f4f675430bb97ce6a6cb2444351a58ec60416d3a8497fd2f5493dbd9735e3f05fb13197e1f263c49a9ff62e44d02f24117c31b2a90d"
+    }
+}
