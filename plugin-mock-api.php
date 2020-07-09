@@ -113,10 +113,10 @@ class Plugin {
 			'hash'      => bin2hex( $this->downloaded_file_hashes[ $file ] ),
 			'date'      => gmdate( 'Y-m-d\TH:i:s\Z' ),
 			'signature' => [
-				$zip_signing_key['key'] => sodium_crypto_sign_detached(
+				$zip_signing_key['key'] => bin2hex( sodium_crypto_sign_detached(
 					$this->downloaded_file_hashes[ $file ],
 					hex2bin( $zip_signing_key['privkey'] )
-				)
+				) )
 			]
 		];
 
@@ -131,10 +131,10 @@ class Plugin {
 
 		// Sign the file manifest.
 		$json_canonical = VerificationPlugin::instance()->json_canonical_encode( $json );
-		$json['signature'][ $api_signing_key['key'] ] = sodium_crypto_sign_detached(
+		$json['signature'][ $api_signing_key['key'] ] = bin2hex( sodium_crypto_sign_detached(
 			$json_canonical,
 			hex2bin( $api_signing_key['privkey'] )
-		);
+		) );
 
 		return json_encode( $json );
 	}
