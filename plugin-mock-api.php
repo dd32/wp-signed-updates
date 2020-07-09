@@ -75,9 +75,9 @@ class Plugin {
 				$response['headers']['link'] = "<$manifest_url>; rel=\"manifest\"";
 
 				if ( $response['filename'] ) {
-					$this->downloaded_file_hashes[ $file ] = hash_file( 'sha384', $response['filename'], true );
+					$this->downloaded_file_hashes[ $file ] = hash_file( 'sha384', $response['filename'] );
 				} else {
-					$this->downloaded_file_hashes[ $file ] = hash( 'sha384', $response['body'], true );
+					$this->downloaded_file_hashes[ $file ] = hash( 'sha384', $response['body'] );
 				}
 			}
 		}
@@ -110,7 +110,7 @@ class Plugin {
 
 		$sha384_hash = [
 			'type'      => 'sha384',
-			'hash'      => bin2hex( $this->downloaded_file_hashes[ $file ] ),
+			'hash'      => $this->downloaded_file_hashes[ $file ],
 			'date'      => gmdate( 'Y-m-d\TH:i:s\Z' ),
 			'signature' => [
 				$zip_signing_key['key'] => bin2hex( sodium_crypto_sign_detached(
