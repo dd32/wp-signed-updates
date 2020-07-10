@@ -27,6 +27,7 @@ class Test_Trust extends WP_Signing_UnitTestCase {
 		$this->assertFalse( Plugin::instance()->key_is_trusted( $key ) );
 		$this->assertFalse( Plugin::instance()->key_is_valid_for( $key, 'api' ) );
 		$this->assertFalse( Plugin::instance()->key_is_valid_for_date( $key, '2025-01-01T00:00:00Z' ) );
+		$this->assertTrue( Plugin::instance()->key_is_revoked( $key, '2020-02-01T00:00:00Z' ) );
 		$this->assertTrue( Plugin::instance()->key_is_revoked( $key, '2025-01-01T00:00:00Z' ) );
 	}
 
