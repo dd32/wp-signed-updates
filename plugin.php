@@ -56,7 +56,7 @@ class Plugin {
 		// Fetch the manifest for the key, recursively.
 		if ( ! isset( $this->key_cache[ $key ] ) ) {
 			// Fetch key data from WordPress.org.
-			$req = wp_safe_remote_get( "https://api.wordpress.org/key-manifests/{$key}.json" );
+			$req = wp_safe_remote_get( "https://downloads.wordpress.org/key-manifests/{$key}.json" );
 			if ( 200 === wp_remote_retrieve_response_code( $req ) ) {
 				$json = json_decode( wp_remote_retrieve_body( $req ), true );
 				if ( $json ) {
