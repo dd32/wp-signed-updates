@@ -14,6 +14,7 @@ $signing_key_pub = bin2hex( sodium_crypto_sign_publickey_from_secretkey( hex2bin
 
 $revoke = json_decode( file_get_contents( __DIR__ . '/keys/revocation-list.json' ), true );
 $revoke['date'] = gmdate( 'Y-m-d\TH:i:s\Z' );
+$revoke['serial']++;
 
 $revoke_canonical = Plugin::instance()->json_canonical_encode( $revoke );
 
