@@ -31,6 +31,10 @@ class Plugin {
 		$is_api       = ( 'api.wordpress.org' === $url_parts['host'] );
 		$is_downloads = ( 'downloads.wordpress.org' === $url_parts['host'] || 'downloads.w.org' === $url_parts['host'] );
 
+		if ( $is_downloads && '/key-manifests/recovation-list.json' === $url_parts['path'] ) {
+			return $this->mock_http_response( file_get_contents( __DIR__ . '/keys/revocation-list.json' ) );
+		}
+
 		if (
 			$is_downloads &&
 			str_starts_with( $url_parts['path'], '/key-manifests/' ) &&

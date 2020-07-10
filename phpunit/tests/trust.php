@@ -27,6 +27,7 @@ class Test_Trust extends WP_Signing_UnitTestCase {
 		$this->assertFalse( Plugin::instance()->key_is_trusted( $key ) );
 		$this->assertFalse( Plugin::instance()->key_is_valid_for( $key, 'api' ) );
 		$this->assertFalse( Plugin::instance()->key_is_valid_for_date( $key, '2025-01-01T00:00:00Z' ) );
+		$this->assertTrue( Plugin::instance()->key_is_revoked( $key, '2025-01-01T00:00:00Z' ) );
 	}
 
 	function test_can_trust() {
@@ -36,6 +37,30 @@ class Test_Trust extends WP_Signing_UnitTestCase {
 		$this->assertFalse( Plugin::instance()->can_trust( $key, 'key', '2020-12-01T00:00:00Z' ) );
 		$this->assertFalse( Plugin::instance()->can_trust( $key, 'api', '2025-12-01T00:00:00Z' ) );
 		$this->assertFalse( Plugin::instance()->can_trust( $key, 'key', '2025-12-01T00:00:00Z' ) );
+	}
+
+	function test_key_revoke() {
+		$key = file_get_contents( SIGNING_PLUGIN_DIR . '/keys/expired-intermediate.pub' );
+
+		$this->assertTrue( Plugin::instance()->key_is_trusted( $key ) );
+		$this->assertTrue( Plugin::instance()->key_is_valid_for( $key, 'key' ) );
+
+		// Test it's revoked
+		$this->assertFalse( Plugin::instance()->key_is_revoked( $key, '2020-04-30T23:59:59Z' ) );
+		$this->assertTrue( Plugin::instance()->key_is_revoked( $key, '2020-05-01T00:00:00Z' ) );
+		$this->assertTrue( Plugin::instance()->key_is_revoked( $key, '2020-05-30T00:00:00Z' ) );
+
+		// Test that the key can't be trusted after it's been revoked.
+		$this->assertTrue( Plugin::instance()->can_trust( $key, 'key', '2020-04-30T23:59:59Z' ) );
+		$this->assertFalse( Plugin::instance()->can_trust( $key, 'key', '2020-05-01T00:00:00Z' ) );
+		$this->assertFalse( Plugin::instance()->can_trust( $key, 'key', '2020-05-30T00:00:00Z' ) );
+
+		// Key is valid for these dates, although shouldn't be trusted for them.
+		$this->assertTrue( Plugin::instance()->key_is_valid_for_date( $key, '2020-04-30T23:59:59Z' ) );
+		$this->assertTrue( Plugin::instance()->key_is_valid_for_date( $key, '2020-05-01T00:00:00Z' ) );
+		$this->assertTrue( Plugin::instance()->key_is_valid_for_date( $key, '2020-05-30T00:00:00Z' ) );
+		$this->assertFalse( Plugin::instance()->key_is_valid_for_date( $key, '2020-09-01T00:00:00Z' ) );
+
 	}
 
 	/**

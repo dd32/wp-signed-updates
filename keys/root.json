@@ -3,6 +3,6 @@
 	"desc": "Root Key #1",
 	"date": "2020-01-01T00:00:00Z",
 	"validUntil": "2035-01-01T00:00:00Z",
-	"canSign": [ "key" ],
+	"canSign": [ "key", "revoke" ],
 	"signature": {}
 }

@@ -20,7 +20,7 @@ class Plugin {
 			'desc'       => 'Root Key #1',
 			'date'       => '2020-01-01T00:00:00Z',
 			'validUntil' => '2035-01-01T00:00:00Z',
-			'canSign'    => [ 'key' ],
+			'canSign'    => [ 'key', 'revoke' ],
 			'signature'  => []
 		],
 		'e470c61ff127b87010dd8f4bd8d12fa2c59967f19ccbabc18ea3b0ca3602275d' => [
@@ -28,7 +28,7 @@ class Plugin {
 			'desc'       => 'Root Key #2',
 			'date'       => '2020-01-01T00:00:00Z',
 			'validUntil' => '2035-01-01T00:00:00Z',
-			'canSign'    => [ 'key' ],
+			'canSign'    => [ 'key', 'revoke' ],
 			'signature'  => []
 		]
 	];
@@ -49,7 +49,8 @@ class Plugin {
 	public function can_trust( $key, $what, $date ) {
 		return $this->key_is_trusted( $key ) &&
 			$this->key_is_valid_for( $key, $what ) &&
-			$this->key_is_valid_for_date( $key, $date );
+			$this->key_is_valid_for_date( $key, $date ) &&
+			! $this->key_is_revoked( $key, $date );
 	}
 
 	public function key_is_trusted( $key ) {
@@ -87,6 +88,59 @@ class Plugin {
 			! empty( $this->key_cache[ $key ] ) &&
 			$date >= strtotime( $this->key_cache[ $key ]['date'] ) &&
 			$date <= strtotime( $this->key_cache[ $key ]['validUntil'] );
+	}
+
+	public function key_is_revoked( $key, $date ) {
+		$date = is_int( $date ) ? $date : strtotime( $date );
+
+		static $json;
+		if ( ! $json ) {
+			$url = 'https://downloads.wordpress.org/key-manifests/recovation-list.json';
+			$json = json_decode( wp_remote_retrieve_body( wp_remote_get( $url ) ), true );
+		}
+
+		if ( ! $json ) {
+			// Unavailable, assume it's revoked.
+			return true;
+		}
+
+		// TODO: This is a recusion prevention check.
+		static $validating_self = false;
+		if ( $validating_self ) {
+			return false;
+		}
+		$validating_self = true;
+		// Validate that the revocation list is acceptable.
+		if ( ! $this->validate_signed_json( $json, 'revoke' ) ) {
+			return true;
+		}
+		$validating_self = false;
+
+		// Key not revoked?
+		if ( ! isset( $json['keys'][ $key ] ) ) {
+			return false;
+		}
+		$key_revoked_entry = $json['keys'][ $key ];
+
+		// The entry specifying that it was revoked is invalid.
+		if ( ! $this->validate_signed_json( $key_revoked_entry, 'revoke' ) ) {
+			return false;
+		}
+
+		// Key is revoked only after a specific date
+		if (
+			! empty( $key_revoked_entry['validUntil'] ) &&
+			$date < strtotime( $key_revoked_entry['validUntil'] )
+		) {
+			return false;
+		}
+
+		// All checks that could say it's still valid have bypassed, must be revoked.
+		return true;
+	}
+
+	public function signature_is_revoked( $signature, $what ) {
+
 	}
 
 	public function validate_signed_json( $json, $what = 'key' ) {

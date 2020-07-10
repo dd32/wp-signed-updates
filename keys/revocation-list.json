@@ -1,0 +1,27 @@
+{
+    "keys": {
+        "14be2be02b18caa81c74096a163135aec2bc478ff0c5134db08d73267d88c985": {
+            "key": "14be2be02b18caa81c74096a163135aec2bc478ff0c5134db08d73267d88c985",
+            "desc": "Key was valid until 2020-06-01, but should not be trusted after 2020-05-01",
+            "date": "2020-05-02T00:00:00Z",
+            "validUntil": "2020-05-01T00:00:00Z",
+            "signature": {
+                "39f6eb7cd5c98ff9244dc8489a1f9f793510c456a9e2a8349319e18808136634": "09e1392c3f2de033773106a12bfcda7b00ce05d008dc37f38497c83d884fd5c83490ad3e32cc16e5be2cff0f4ac33c09cf6c6c9fa71247d88aa3eb3c6ae4db01"
+            }
+        },
+        "c5bb068cb92492f586c789de0a7ee2834da113b5cb0f28874abe9d8ab0826dae": {
+            "key": "c5bb068cb92492f586c789de0a7ee2834da113b5cb0f28874abe9d8ab0826dae",
+            "desc": "Key should not exist, was signed after parent expired.",
+            "date": "2020-09-01T00:00:00Z",
+            "validUntil": false,
+            "signature": {
+                "39f6eb7cd5c98ff9244dc8489a1f9f793510c456a9e2a8349319e18808136634": "06daebf5cd923a4ab4a356720fe810470c0f04132f87f0dfde5b401558f9cdf4c782b9ac540c8c1d8667ebec1c1efdb7b62373d599ffe059d572a7c4f5bab807"
+            }
+        }
+    },
+    "signatures": [],
+    "date": "2020-07-10T06:54:12Z",
+    "signature": {
+        "39f6eb7cd5c98ff9244dc8489a1f9f793510c456a9e2a8349319e18808136634": "41b2bc18ec41f8c7a6d18e949fa225164e49945e4415a5886d1a6329da7b93ec8dfc4ace265b8d6c631c113d5dd7b82a4cbc718bc742b8252a59f2af4ae25a0b"
+    }
+}
